@@ -1,3 +1,5 @@
-/src/ReactiveProbes/bin/
-/src/ReactiveProbes/obj/
+/src/ReactiveProbes/bin/*
+/src/ReactiveProbes/obj/*
+/src/ReactiveProbes.Tests/bin/*
+/src/ReactiveProbes.Tests/obj/*
 /.idea/
