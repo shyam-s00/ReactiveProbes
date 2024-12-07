@@ -25,7 +25,7 @@ jobs:
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
       working-directory: src/ReactiveProbes
     - name: Push
-      run: dotnet nuget push ReactiveProbes.${VERSION}.nupkg --source https://nuget.pkg.github.com/acraven/index.json --api-key ${NUGET_TOKEN}
+      run: dotnet nuget push ReactiveProbes.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_TOKEN}
       working-directory: src/ReactiveProbes
       env:
         NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
