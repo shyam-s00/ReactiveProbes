@@ -25,5 +25,7 @@ jobs:
       working-directory: src/ReactiveProbes
     - name: Build
       run: dotnet build --no-restore
+      working-directory: src/ReactiveProbes
     - name: Test
       run: dotnet test --no-build --verbosity normal
+      working-directory: src/ReactiveProbes
