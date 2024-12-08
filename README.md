@@ -12,19 +12,25 @@ An ASP.NET startup probe built with reactive extensions. It validates all regist
 
 ## Installation
 
-To include ReactiveProbes in your project, you can use the following steps:
+To include ReactiveProbes in your project, you can use the following NuGet package:
 
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/shyam-s00/ReactiveProbes.git
-   ```
-2. Open the project in your preferred IDE.
+```sh
+dotnet add package ReactiveProbes  
+```
+
 
 ## Usage
 
-1. Register the health checks in your ASP.NET application.
-2. Add ReactiveProbes to your startup and register them.
-3. The `/ready` endpoint will be available to check the readiness of your application.
+1. Register the health checks in your ASP.NET web API.
+2. Add ReactiveProbes to your startup:
+   ```csharp
+   services.AddReactiveProbes();
+   ```
+3. Register the probes:
+   ```csharp
+   app.RegisterReactiveStartupProbe();
+   ```
+4. The `/ready` endpoint will be available to check the readiness of your application.
 
 ## Contributing
 
