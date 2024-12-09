@@ -18,15 +18,11 @@ jobs:
       run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
     - name: Build
       run: dotnet build --configuration Release /p:Version=${VERSION}
-      working-directory: src/ReactiveProbes
     - name: Test
       run: dotnet test --configuration Release /p:Version=${VERSION} --no-build
-      working-directory: src/ReactiveProbes
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
-      working-directory: src/ReactiveProbes
     - name: Push
       run: dotnet nuget push ReactiveProbes.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_TOKEN}
-      working-directory: src/ReactiveProbes
       env:
         NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
