@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveProbes", "src\React
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReactiveProbes.Test", "src\ReactiveProbes.Test\ReactiveProbes.Test.csproj", "{58BE8585-DCB8-4E60-B9C4-2DD8147246B6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{2FD7120D-EF71-4202-94C8-2AA07848B8BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleAPI", "src\Samples\SampleAPI\SampleAPI.csproj", "{2F399576-FD2A-4B17-89BF-C55135BBE0B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,11 @@ Global
 		{58BE8585-DCB8-4E60-B9C4-2DD8147246B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58BE8585-DCB8-4E60-B9C4-2DD8147246B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58BE8585-DCB8-4E60-B9C4-2DD8147246B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F399576-FD2A-4B17-89BF-C55135BBE0B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F399576-FD2A-4B17-89BF-C55135BBE0B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F399576-FD2A-4B17-89BF-C55135BBE0B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2F399576-FD2A-4B17-89BF-C55135BBE0B3} = {2FD7120D-EF71-4202-94C8-2AA07848B8BE}
 	EndGlobalSection
 EndGlobal
