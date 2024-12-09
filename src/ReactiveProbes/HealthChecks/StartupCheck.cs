@@ -9,7 +9,7 @@ public class StartupCheck : IHealthCheck
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
     {
         return Task.FromResult(IsStarted ? 
-                HealthCheckResult.Healthy("Service is Ready") : 
-                HealthCheckResult.Unhealthy("Service is not Ready"));
+                HealthCheckResult.Healthy("Ready") : 
+                HealthCheckResult.Unhealthy("Not Ready"));
     }
 }

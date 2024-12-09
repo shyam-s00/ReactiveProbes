@@ -12,9 +12,7 @@ public static class ReactiveProbeInstaller
 {
     public static void AddReactiveProbes(this IServiceCollection services, IConfiguration config)
     {
-         var probeConfig = new ProbeConfig();
-         config.GetSection("ProbeConfig").Bind(probeConfig);
-         services.AddSingleton(probeConfig);
+         services.Configure<ProbeConfig>(config.GetSection("ProbeConfig"));
          services.AddSingleton<IObservableProbe, ObservableProbe>();
          
          services.AddHealthChecks()
@@ -39,22 +37,8 @@ public static class ReactiveProbeInstaller
                 if (report.Status == HealthStatus.Healthy)
                 {
                     StartupCheck.IsStarted = true;
-                    Console.WriteLine("Service is ready");
+                    Console.WriteLine("Application started");
                 }
-            }, () => Console.WriteLine("Readiness check completed"));
+            }, () => Console.WriteLine("Readiness check(s) completed"));
     }
-    //
-    // public static void RegisterReactiveProbes(this IServiceProvider serviceProvider, Action<HealthReport> onChanged,
-    //     Action completed)
-    // {
-    //     var observableProbe = serviceProvider.GetRequiredService<IObservableProbe>();
-    //     observableProbe.WhenHealthCheckChanged()
-    //         .Subscribe(onChanged, completed);
-    // }
-    //
-    // public static IObservable<HealthReport> StartReactiveProbes(this IServiceProvider serviceProvider)
-    // {
-    //     var probe = serviceProvider.GetRequiredService<IObservableProbe>();
-    //     return probe.WhenHealthCheckChanged();
-    // }
 }
