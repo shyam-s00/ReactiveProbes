@@ -8,17 +8,17 @@ namespace ReactiveProbes;
 
 public class ObservableProbe(HealthCheckService healthCheckService, IOptions<ProbeConfig> config) : IObservableProbe
 {
-    private readonly HealthCheckService _healthCheckService = healthCheckService;
-    private readonly IOptions<ProbeConfig> _config = config;
+    private readonly CancellationTokenSource _cancellation = new();
 
     public IObservable<HealthReport> WhenHealthCheckChanged()
     {
-        return Observable.Interval(TimeSpan.FromSeconds(_config.Value.Interval))
-            .Select(_ => _healthCheckService.CheckHealthAsync(
-                x => !x.Tags.Contains("startup")).ToObservable())
+        return Observable.Interval(TimeSpan.FromSeconds(config.Value.Interval))
+            .Select(_ => healthCheckService.CheckHealthAsync(
+                x => !x.Tags.Contains("startup"), _cancellation.Token).ToObservable())
             .Merge()
             .DistinctUntilChanged(x => x.Status)
             .TakeUntil(x => x.Status == HealthStatus.Healthy)
+            .Do(_ => {}, () => _cancellation.Cancel())
             .Publish()
             .RefCount();
     }
