@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ReactiveProbes.Configuration;
 using ReactiveProbes.HealthChecks;
@@ -21,13 +18,10 @@ public static class ReactiveProbeInstaller
     
     public static void RegisterReactiveStartupProbe(this IApplicationBuilder app)
     {
-        app.UseRouting();
-        app.UseEndpoints(endpoints =>
+        
+        app.UseHealthChecks("/ready", new HealthCheckOptions()
         {
-            endpoints.MapHealthChecks("/ready", new HealthCheckOptions
-            {
-                Predicate = (check) => check.Tags.Contains("startup"),
-            });
+            Predicate = (check) => check.Tags.Contains("startup")
         });
         
         var observableProbe = app.ApplicationServices.GetRequiredService<IObservableProbe>();
