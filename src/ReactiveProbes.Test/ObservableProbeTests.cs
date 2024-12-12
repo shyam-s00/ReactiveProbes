@@ -17,13 +17,14 @@ namespace ReactiveProbes.Test
             configMock.Setup(c => c.Value).Returns(new ProbeConfig { Interval = 1 });
 
             var healthReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Healthy, TimeSpan.Zero);
-            healthCheckServiceMock.Setup(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), default))
+            healthCheckServiceMock.Setup(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(healthReport);
 
             var probe = new ObservableProbe(healthCheckServiceMock.Object, configMock.Object);
 
             var result = await probe.WhenHealthCheckChanged().Take(1).ToTask();
 
+            Assert.NotNull(result);
             Assert.Equal(healthReport, result);
         }
 
@@ -34,10 +35,10 @@ namespace ReactiveProbes.Test
             var configMock = new Mock<IOptions<ProbeConfig>>();
             configMock.Setup(c => c.Value).Returns(new ProbeConfig { Interval = 1 });
 
-            var unhealthyReport = new HealthReport(new Dictionary<string, HealthReportEntry>(),  HealthStatus.Unhealthy, TimeSpan.Zero);
+            var unhealthyReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Unhealthy, TimeSpan.Zero);
             var healthyReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Healthy, TimeSpan.Zero);
 
-            healthCheckServiceMock.SetupSequence(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), default))
+            healthCheckServiceMock.SetupSequence(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(unhealthyReport)
                 .ReturnsAsync(healthyReport);
 
@@ -59,7 +60,7 @@ namespace ReactiveProbes.Test
 
             var healthReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Healthy, TimeSpan.Zero);
 
-            healthCheckServiceMock.Setup(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), default))
+            healthCheckServiceMock.Setup(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(healthReport);
 
             var probe = new ObservableProbe(healthCheckServiceMock.Object, configMock.Object);
@@ -68,7 +69,7 @@ namespace ReactiveProbes.Test
 
             Assert.Single(results);
         }
-        
+
         [Fact]
         public async Task WhenHealthCheckChanged_EmitsDegradedHealthReport()
         {
@@ -77,16 +78,17 @@ namespace ReactiveProbes.Test
             configMock.Setup(c => c.Value).Returns(new ProbeConfig { Interval = 1 });
 
             var degradedReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Degraded, TimeSpan.Zero);
-            healthCheckServiceMock.Setup(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), default))
+            healthCheckServiceMock.Setup(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(degradedReport);
 
             var probe = new ObservableProbe(healthCheckServiceMock.Object, configMock.Object);
 
             var result = await probe.WhenHealthCheckChanged().Take(1).ToTask();
 
+            Assert.NotNull(result);
             Assert.Equal(degradedReport, result);
         }
-        
+
         [Fact]
         public async Task WhenHealthCheckChanged_HandlesRapidHealthStatusChanges()
         {
@@ -98,7 +100,7 @@ namespace ReactiveProbes.Test
             var unhealthyReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Unhealthy, TimeSpan.Zero);
             var degradedReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Degraded, TimeSpan.Zero);
 
-            healthCheckServiceMock.SetupSequence(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), default))
+            healthCheckServiceMock.SetupSequence(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(unhealthyReport)
                 .ReturnsAsync(degradedReport)
                 .ReturnsAsync(healthyReport);
