@@ -8,8 +8,12 @@ namespace ReactiveProbes;
 
 public class ObservableProbe(HealthCheckService healthCheckService, IOptions<ProbeConfig> config) : IObservableProbe
 {
-    private readonly CancellationTokenSource _cancellation = new();
-
+    private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
+    
+    /// <summary>
+    /// Observes health check changes at specified intervals.
+    /// </summary>
+    /// <returns></returns>
     public IObservable<HealthReport> WhenHealthCheckChanged()
     {
         return Observable.Interval(TimeSpan.FromSeconds(config.Value.Interval))
@@ -26,5 +30,9 @@ public class ObservableProbe(HealthCheckService healthCheckService, IOptions<Pro
 
 public interface IObservableProbe
 {
+    /// <summary>
+    /// Observes health check changes at specified intervals.
+    /// </summary>
+    /// <returns>An Observable of type IObservable</returns>
     IObservable<HealthReport> WhenHealthCheckChanged();
 }
