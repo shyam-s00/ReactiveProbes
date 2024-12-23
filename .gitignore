@@ -2,3 +2,5 @@
 **/obj/*
 /.idea/
 *.sln.DotSettings.user
+**/coveragereport/
+**/coverage.*.xml
