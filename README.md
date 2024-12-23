@@ -1,5 +1,5 @@
 # ReactiveProbes 
-[![.NET](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/dotnet.yml/badge.svg)](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/dotnet.yml)  [![NuGet](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/release.yml/badge.svg)](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/release.yml)   [![NuGet Repo](https://img.shields.io/badge/nuget-v1.0.2-blue?style=flat&logo=nuget)](https://www.nuget.org/packages/ReactiveProbes)
+[![.NET](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/dotnet.yml/badge.svg)](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/dotnet.yml)  [![NuGet](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/release.yml/badge.svg)](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/release.yml)   [![NuGet Repo](https://img.shields.io/badge/nuget-v1.1.0-blue?style=flat&logo=nuget)](https://www.nuget.org/packages/ReactiveProbes)
 
 
 
