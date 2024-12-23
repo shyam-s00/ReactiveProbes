@@ -40,7 +40,7 @@ public class ExternalServiceHealthCheck : IHealthCheck
 {
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
     {
-        await Task.Delay(TimeSpan.FromSeconds(20), cancellationToken);
+        await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
         return HealthCheckResult.Healthy("External service is healthy");
     }
 }
