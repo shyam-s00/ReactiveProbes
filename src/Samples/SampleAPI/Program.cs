@@ -17,6 +17,7 @@ public class Program
         
         // APIs health checks
         builder.Services.AddHealthChecks()
+            .AddReactiveHealthProbes()
             .AddRestApiCheck("Google", "https://www.google.com", ["health"])
             .AddRestApiCheck("ReqRes", "https://reqres.in/api/unknown/", ["health"])
             //.AddRestApiCheck("SlowAPI", "https://reqres.in/api/users?delay=10", ["health", "startup"])
@@ -45,7 +46,8 @@ public class Program
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
         
-        app.MapHealthCheckEndpoint();
+        //app.MapHealthCheckEndpoint();
+        app.RegisterReactiveHealthProbe();
         app.RegisterReactiveStartupProbe();
 
         app.MapGet("/weatherforecast", (HttpContext httpContext) =>
