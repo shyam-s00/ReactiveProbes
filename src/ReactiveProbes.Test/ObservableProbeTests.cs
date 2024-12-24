@@ -4,17 +4,20 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Moq;
 using ReactiveProbes.Configuration;
+using ReactiveProbes.Probes;
 
 namespace ReactiveProbes.Test
 {
     public class ObservableProbeTests
     {
+        private readonly ProbeConfig _config = new ProbeConfig { Intervals = new IntervalsConfig() { Startup = 1 } };
+
         [Fact]
         public async Task WhenHealthCheckChanged_EmitsHealthReportOnInterval()
         {
             var healthCheckServiceMock = new Mock<HealthCheckService>();
             var configMock = new Mock<IOptions<ProbeConfig>>();
-            configMock.Setup(c => c.Value).Returns(new ProbeConfig { Interval = 1 });
+            configMock.Setup(c => c.Value).Returns(_config);
 
             var healthReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Healthy, TimeSpan.Zero);
             healthCheckServiceMock.Setup(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), It.IsAny<CancellationToken>()))
@@ -33,7 +36,7 @@ namespace ReactiveProbes.Test
         {
             var healthCheckServiceMock = new Mock<HealthCheckService>();
             var configMock = new Mock<IOptions<ProbeConfig>>();
-            configMock.Setup(c => c.Value).Returns(new ProbeConfig { Interval = 1 });
+            configMock.Setup(c => c.Value).Returns(_config);
 
             var unhealthyReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Unhealthy, TimeSpan.Zero);
             var healthyReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Healthy, TimeSpan.Zero);
@@ -56,7 +59,7 @@ namespace ReactiveProbes.Test
         {
             var healthCheckServiceMock = new Mock<HealthCheckService>();
             var configMock = new Mock<IOptions<ProbeConfig>>();
-            configMock.Setup(c => c.Value).Returns(new ProbeConfig { Interval = 1 });
+            configMock.Setup(c => c.Value).Returns(_config);
 
             var healthReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Healthy, TimeSpan.Zero);
 
@@ -75,7 +78,7 @@ namespace ReactiveProbes.Test
         {
             var healthCheckServiceMock = new Mock<HealthCheckService>();
             var configMock = new Mock<IOptions<ProbeConfig>>();
-            configMock.Setup(c => c.Value).Returns(new ProbeConfig { Interval = 1 });
+            configMock.Setup(c => c.Value).Returns(_config);
 
             var degradedReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Degraded, TimeSpan.Zero);
             healthCheckServiceMock.Setup(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), It.IsAny<CancellationToken>()))
@@ -94,7 +97,7 @@ namespace ReactiveProbes.Test
         {
             var healthCheckServiceMock = new Mock<HealthCheckService>();
             var configMock = new Mock<IOptions<ProbeConfig>>();
-            configMock.Setup(c => c.Value).Returns(new ProbeConfig { Interval = 1 });
+            configMock.Setup(c => c.Value).Returns(_config);
 
             var healthyReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Healthy, TimeSpan.Zero);
             var unhealthyReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Unhealthy, TimeSpan.Zero);

@@ -4,19 +4,21 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using ReactiveProbes.Configuration;
 
-namespace ReactiveProbes;
+namespace ReactiveProbes.Probes;
 
 public class ObservableProbe(HealthCheckService healthCheckService, IOptions<ProbeConfig> config) : IObservableProbe
 {
     private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
+    private const int DefaultStartupInterval = 10;
     
     /// <summary>
     /// Observes health check changes at specified intervals.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Observable of type <see cref="IObservable{HealthReport}"/></returns>
     public IObservable<HealthReport> WhenHealthCheckChanged()
     {
-        return Observable.Interval(TimeSpan.FromSeconds(config.Value.Interval))
+        var probeConfig = config.Value;
+        return Observable.Interval(TimeSpan.FromSeconds(probeConfig?.Intervals.Startup ?? DefaultStartupInterval))
             .Select(_ => healthCheckService.CheckHealthAsync(
                 x => !x.Tags.Contains("startup"), _cancellation.Token).ToObservable())
             .Merge()
@@ -27,12 +29,11 @@ public class ObservableProbe(HealthCheckService healthCheckService, IOptions<Pro
             .RefCount();
     }
 }
-
 public interface IObservableProbe
 {
     /// <summary>
     /// Observes health check changes at specified intervals.
     /// </summary>
-    /// <returns>An Observable of type IObservable</returns>
+    /// <returns>An Observable of type <see cref="IObservable{HealthReport}"/></returns>
     IObservable<HealthReport> WhenHealthCheckChanged();
 }
