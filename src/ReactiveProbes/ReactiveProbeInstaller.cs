@@ -1,4 +1,3 @@
-using System.Reactive.Subjects;
 using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -66,6 +65,7 @@ public static class ReactiveProbeInstaller
                 var json = JsonSerializer.Serialize(new
                 {
                     status = report.Status.ToString(),
+                    lastUpdated = LivenessCheck.LastUpdated,
                     checks = report.Entries.Select(e => new
                     {
                         name = e.Key,
@@ -90,6 +90,7 @@ public static class ReactiveProbeInstaller
     {
         builder.Services.AddSingleton<IObservableHealthProbes, ObservableHealthProbes>();
         builder.Services.AddHttpClient();
+        builder.AddCheck<LivenessCheck>("LivenessCheck", tags: ["live"]);
         return builder;
     }
     
@@ -118,12 +119,13 @@ public static class ReactiveProbeInstaller
     /// <param name="app">The application builder to configure the middleware.</param>
     public static void RegisterReactiveHealthProbe(this IApplicationBuilder app)
     {
-        app.MapHealthCheckEndpoint();
+        app.MapHealthCheckEndpoint(tag: "live");
         
         var observableHealthChecks = app.ApplicationServices.GetRequiredService<IObservableHealthProbes>();
         observableHealthChecks.WhenChanged()
             .Subscribe(report =>
             {
+                LivenessCheck.LastReport = report;
                 Console.WriteLine($"Health Check status: {report.Status}");
             }, () => Console.WriteLine("Health check(s) completed"));
         

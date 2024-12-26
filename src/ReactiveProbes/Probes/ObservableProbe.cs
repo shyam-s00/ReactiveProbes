@@ -18,6 +18,7 @@ public class ObservableProbe(HealthCheckService healthCheckService, IOptions<Pro
     public IObservable<HealthReport> WhenHealthCheckChanged()
     {
         var probeConfig = config.Value;
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         return Observable.Interval(TimeSpan.FromSeconds(probeConfig?.Intervals.Startup ?? DefaultStartupInterval))
             .Select(_ => healthCheckService.CheckHealthAsync(
                 x => !x.Tags.Contains("startup"), _cancellation.Token).ToObservable())

@@ -22,11 +22,18 @@ public class ObservableHealthProbes(HealthCheckService healthCheckService, IOpti
         var probeConfig = config.Value;
         
         return Observable.Create<HealthReport>(observer =>
-            Observable.Interval(TimeSpan.FromSeconds(probeConfig?.Intervals.HealthChecks ?? DefaultHealthCheckInterval))
-                .Gate(_gateController)
-                .SelectMany(_ => healthCheckService.CheckHealthAsync(checks =>
-                    checks.Tags.Contains("health")).ToObservable())
-                .Subscribe(observer)
+            {
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+                var subscription = Observable
+                    .Interval(TimeSpan.FromSeconds(probeConfig?.Intervals.HealthChecks ?? DefaultHealthCheckInterval))
+                    .Gate(_gateController)
+                    .Select(_ => healthCheckService.CheckHealthAsync(checks =>
+                        checks.Tags.Contains("health")).ToObservable())
+                    .Merge()
+                    .Subscribe(observer);
+
+                return subscription;
+            }
         );
     }
 
@@ -50,7 +57,19 @@ public class ObservableHealthProbes(HealthCheckService healthCheckService, IOpti
 
 public interface IObservableHealthProbes
 {
+    /// <summary>
+    /// Observes health check changes at specified intervals.
+    /// </summary>
+    /// <returns>An observable sequence of health reports of type <see cref="IObservable{HealthReport}"/></returns>
     IObservable<HealthReport> WhenChanged();
+    
+    /// <summary>
+    /// Stops the health checks by closing the gate.
+    /// </summary>
     void Stop();
+    
+    /// <summary>
+    /// Resumes the health checks by opening the gate.
+    /// </summary>
     void Start();
 }
