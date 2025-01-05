@@ -1,9 +1,9 @@
-using System.Text.Json;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ReactiveProbes.Configuration;
 using ReactiveProbes.HealthChecks;
 using ReactiveProbes.Probes;
+using ReactiveProbes.Shared;
 
 namespace ReactiveProbes;
 
@@ -31,7 +31,8 @@ public static class ReactiveProbeInstaller
     {
         app.UseHealthChecks("/ready", new HealthCheckOptions()
         {
-            Predicate = (check) => check.Tags.Contains("startup")
+            Predicate = (check) => check.Tags.Contains("startup"),
+            ResponseWriter = ResponseWriters.ReadinessWriterAsync
         });
         
         var observableProbe = app.ApplicationServices.GetRequiredService<IObservableProbe>();
@@ -45,38 +46,22 @@ public static class ReactiveProbeInstaller
                 }
             }, () => Console.WriteLine("Readiness check(s) completed"));
     }
+
     
+
     // ReSharper disable once MemberCanBePrivate.Global
     /// <summary>
-    /// Maps the health check to <c>/health</c> endpoint or with the specified pattern and tag.
+    /// Maps the health check to <c>/live</c> endpoint or with the specified pattern and tag. The endpoint returns the 
+    /// extended health check status as json response.
     /// </summary>
     /// <param name="app">The application builder to configure the middleware.</param>
-    /// <param name="pattern">The URL pattern for the health check endpoint.  Defaults to <c>/health</c></param>
-    /// <param name="tag">The tag to filter health checks. Defaults to <c>health</c></param>
-    public static void MapHealthCheckEndpoint(this IApplicationBuilder app, string pattern = "/health", string tag = "health")
+    /// <param name="pattern">The URL pattern for the health check endpoint.  Defaults to <c>/live</c></param>
+    public static void AddLiveStatusEndpoint(this IApplicationBuilder app, string pattern = "/live")
     {   
         app.UseHealthChecks(pattern, new HealthCheckOptions()
         {
-            Predicate = (check) => check.Tags.Contains(tag),
-            ResponseWriter = async (context, report) =>
-            {
-                context.Response.ContentType = "application/json; charset=utf-8";
-
-                var json = JsonSerializer.Serialize(new
-                {
-                    status = report.Status.ToString(),
-                    lastUpdated = LivenessCheck.LastUpdated,
-                    checks = report.Entries.Select(e => new
-                    {
-                        name = e.Key,
-                        status = e.Value.Status.ToString(),
-                        description = e.Value.Description,
-                        data = e.Value.Data
-                    })
-                });
-
-                await context.Response.WriteAsync(json);
-            }
+            Predicate = (check) => check.Tags.Contains("live"),
+            ResponseWriter = ResponseWriters.LivenessWriterAsync
         });
     }
     
@@ -117,9 +102,10 @@ public static class ReactiveProbeInstaller
     /// by calling <see cref="MapHealthCheckEndpoint"/>
     /// </summary>
     /// <param name="app">The application builder to configure the middleware.</param>
-    public static void RegisterReactiveHealthProbe(this IApplicationBuilder app)
+    /// <param name="pattern">The URL pattern for the health check endpoint.  Defaults to <c>/health</c></param>
+    public static IApplicationBuilder RegisterReactiveHealthProbe(this IApplicationBuilder app, string pattern = "/health")
     {
-        app.MapHealthCheckEndpoint(tag: "live");
+        app.MapHealthCheckEndpoint(pattern);
         
         var observableHealthChecks = app.ApplicationServices.GetRequiredService<IObservableHealthProbes>();
         observableHealthChecks.WhenChanged()
@@ -129,7 +115,7 @@ public static class ReactiveProbeInstaller
                 Console.WriteLine($"Health Check status: {report.Status}");
             }, () => Console.WriteLine("Health check(s) completed"));
         
-        app.Map("/health/stop", builder =>
+        app.Map($"{pattern}/stop", builder =>
         {
             builder.Run(async context =>
             {
@@ -138,7 +124,7 @@ public static class ReactiveProbeInstaller
             });
         });
         
-        app.Map("/health/start", builder =>
+        app.Map($"{pattern}/start", builder =>
         {
             builder.Run(async context =>
             {
@@ -146,5 +132,17 @@ public static class ReactiveProbeInstaller
                 await context.Response.WriteAsync("Health checks started");
             });
         });
+
+        return app;
     }
+    
+    private static void MapHealthCheckEndpoint(this IApplicationBuilder app, string pattern = "/health")
+    {
+        app.UseHealthChecks(pattern, new HealthCheckOptions()
+        {
+            Predicate = (check) => check.Tags.Contains("health"),
+            ResponseWriter = ResponseWriters.GenericStatusWriterAsync
+        });
+    }
+
 }
