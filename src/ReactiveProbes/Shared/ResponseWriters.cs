@@ -6,7 +6,7 @@ namespace ReactiveProbes.Shared;
 
 internal static class ResponseWriters
 {
-    async internal static Task ReadinessWriterAsync(HttpContext context, HealthReport report)
+    internal static async Task ReadinessWriterAsync(HttpContext context, HealthReport report)
     {
         context.Response.ContentType = "application/json; charset=utf-8";
         if (report.Status == HealthStatus.Healthy)
@@ -21,7 +21,7 @@ internal static class ResponseWriters
         }
     }
     
-    async internal static Task LivenessWriterAsync(HttpContext context, HealthReport report)
+    internal static async Task LivenessWriterAsync(HttpContext context, HealthReport report)
     {
         context.Response.ContentType = "application/json; charset=utf-8";
                 
@@ -41,7 +41,7 @@ internal static class ResponseWriters
         await context.Response.WriteAsync(json);
     }
     
-    async internal static Task GenericStatusWriterAsync(HttpContext context, HealthReport report)
+    internal static async Task GenericStatusWriterAsync(HttpContext context, HealthReport report)
     {
         context.Response.ContentType = "application/json; charset=utf-8";
         context.Response.StatusCode = report.Status == HealthStatus.Healthy ? StatusCodes.Status200OK : StatusCodes.Status503ServiceUnavailable;

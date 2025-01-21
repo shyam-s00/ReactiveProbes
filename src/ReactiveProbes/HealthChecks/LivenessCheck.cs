@@ -7,7 +7,7 @@ public class LivenessCheck : IHealthCheck
 {
     private const string LastReportKey = "LastReport";
     // ReSharper disable once InconsistentNaming
-    private readonly static ConcurrentDictionary<string, HealthReport> _lastReport = new ConcurrentDictionary<string, HealthReport>();
+    private static readonly ConcurrentDictionary<string, HealthReport> _lastReport = new ConcurrentDictionary<string, HealthReport>();
 
     public static HealthReport LastReport
     {
