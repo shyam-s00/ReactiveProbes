@@ -31,4 +31,5 @@ jobs:
       with:
         files: ./**/coverage.opencover.xml
         fail_ci_if_error: true # Recommended: Fail CI if upload fails
+        token: ${{ secrets.CODECOV_TOKEN }}
 
