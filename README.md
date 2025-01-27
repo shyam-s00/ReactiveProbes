@@ -1,6 +1,5 @@
 # ReactiveProbes 
-[![.NET](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/dotnet.yml/badge.svg)](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/dotnet.yml)  [![NuGet](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/release.yml/badge.svg)](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/release.yml)   [![NuGet Repo](https://img.shields.io/badge/nuget-v1.1.0-blue?style=flat&logo=nuget)](https://www.nuget.org/packages/ReactiveProbes)
-
+[![.NET](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/dotnet.yml/badge.svg)](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/dotnet.yml) [![codecov](https://codecov.io/github/shyam-s00/ReactiveProbes/branch/main/graph/badge.svg?token=DPNKRAR83E)](https://codecov.io/github/shyam-s00/ReactiveProbes)  [![NuGet](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/release.yml/badge.svg)](https://github.com/shyam-s00/ReactiveProbes/actions/workflows/release.yml)   [![NuGet Repo](https://img.shields.io/badge/nuget-v1.1.0-blue?style=flat&logo=nuget)](https://www.nuget.org/packages/ReactiveProbes) 
 
 
 An ASP.NET startup probe built with reactive extensions. It validates all registered health checks and marks the startup as ready. It exposes a `/ready` endpoint that returns healthy or unhealthy for startup probes to mark the API as ready or not.
