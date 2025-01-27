@@ -25,4 +25,10 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    - name: CodeCov
+      uses: codecov/codecov-action@v5.3.1
+      with:
+        files: ./**/coverage.opencover.xml
+        fail_ci_if_error: true # Recommended: Fail CI if upload fails
+
