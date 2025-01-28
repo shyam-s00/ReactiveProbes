@@ -99,6 +99,72 @@ namespace ReactiveProbes.Test
             Assert.Equal(3, results.Count);
         }
         
+        [Fact]
+        public async Task WhenChanged_EmitsValuesOnlyWhenStarted()
+        {
+            var healthCheckServiceMock = new Mock<HealthCheckService>();
+            var configMock = new Mock<IOptions<ProbeConfig>>();
+            configMock.Setup(c => c.Value).Returns(_config);
+
+            var healthReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Healthy, TimeSpan.Zero);
+            healthCheckServiceMock.Setup(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(healthReport);
+
+            var probes = new ObservableHealthProbes(healthCheckServiceMock.Object, configMock.Object);
+            
+            var emittedValues = new List<HealthReport>();
+            var subscription = probes.WhenChanged().Subscribe(report => emittedValues.Add(report));
+
+            // Start the probes
+            probes.Start();
+
+            // Wait for a short interval to ensure the probes have started
+            await Task.Delay(2000);
+
+            // Dispose the subscription
+            subscription.Dispose();
+
+            // Verify at least one emission after starting
+            Assert.NotEmpty(emittedValues);
+        }
+
+        [Fact]
+        public async Task WhenChanged_StopsEmittingValuesWhenStopped()
+        {
+            var healthCheckServiceMock = new Mock<HealthCheckService>();
+            var configMock = new Mock<IOptions<ProbeConfig>>();
+            configMock.Setup(c => c.Value).Returns(_config);
+
+            var healthReport = new HealthReport(new Dictionary<string, HealthReportEntry>(), HealthStatus.Healthy, TimeSpan.Zero);
+            healthCheckServiceMock.Setup(h => h.CheckHealthAsync(It.IsAny<Func<HealthCheckRegistration, bool>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(healthReport);
+
+            var probes = new ObservableHealthProbes(healthCheckServiceMock.Object, configMock.Object);
+            
+            
+            var emittedValues = new List<HealthReport>();
+            var subscription = probes.WhenChanged().Subscribe(report => emittedValues.Add(report));
+
+            // Start the probes
+            probes.Start();
+
+            // Wait for a short interval to ensure the probes have started
+            await Task.Delay(1000);
+
+            // Stop the probes
+            probes.Stop();
+
+            // Wait for a short interval to ensure no more values are emitted 
+            // and clear any values that may have been emitted
+            emittedValues.Clear();
+            await Task.Delay(1000);
+
+            // Dispose the subscription
+            subscription.Dispose();
+
+            // Verify no emissions after stopping
+            Assert.Empty(emittedValues);
+        }
 
     }
 }
