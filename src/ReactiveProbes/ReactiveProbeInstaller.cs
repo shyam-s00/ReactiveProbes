@@ -30,9 +30,9 @@ public static class ReactiveProbeInstaller
     /// <param name="app">The application builder to configure the middleware.</param>
     public static void RegisterReactiveStartupProbe(this IApplicationBuilder app)
     {
-        app.UseHealthChecks("/ready", new HealthCheckOptions()
+        app.UseHealthChecks("/ready", new HealthCheckOptions
         {
-            Predicate = (check) => check.Tags.Contains("startup"),
+            Predicate = check => check.Tags.Contains("startup"),
             ResponseWriter = ResponseWriters.ReadinessWriterAsync
         });
         
@@ -165,9 +165,9 @@ public static class ReactiveProbeInstaller
     
     private static void MapHealthCheckEndpoint(this IApplicationBuilder app, string pattern = "/health")
     {
-        app.UseHealthChecks(pattern, new HealthCheckOptions()
+        app.UseHealthChecks(pattern, new HealthCheckOptions
         {
-            Predicate = (check) => check.Tags.Contains("health"),
+            Predicate = check => check.Tags.Contains("health"),
             ResponseWriter = ResponseWriters.GenericStatusWriterAsync
         });
     }

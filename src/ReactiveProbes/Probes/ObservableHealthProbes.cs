@@ -10,7 +10,7 @@ namespace ReactiveProbes.Probes;
 
 public class ObservableHealthProbes(HealthCheckService healthCheckService, IOptions<ProbeConfig> config) : IObservableHealthProbes
 {
-    private readonly Subject<bool> _gateController = new Subject<bool>();
+    private readonly Subject<bool> _gateController = new();
     private const int DefaultHealthCheckInterval = 60;
     
     /// <summary>

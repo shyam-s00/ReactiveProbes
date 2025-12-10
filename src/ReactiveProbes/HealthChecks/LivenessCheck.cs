@@ -7,7 +7,7 @@ public class LivenessCheck : IHealthCheck
 {
     private const string LastReportKey = "LastReport";
     // ReSharper disable once InconsistentNaming
-    private static readonly ConcurrentDictionary<string, HealthReport> _lastReport = new ConcurrentDictionary<string, HealthReport>();
+    private static readonly ConcurrentDictionary<string, HealthReport> _lastReport = new();
 
     public static HealthReport LastReport
     {
@@ -21,7 +21,7 @@ public class LivenessCheck : IHealthCheck
 
     public static DateTime LastUpdated { get; private set; }
     
-    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
+    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new())
     {
         // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         if (LastReport?.Status != HealthStatus.Healthy)

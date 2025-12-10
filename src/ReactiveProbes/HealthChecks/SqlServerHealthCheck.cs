@@ -8,7 +8,7 @@ public class SqlServerHealthCheck(IConfiguration config, string name) : IHealthC
 {
     private readonly string _connectionString = config[name] ?? throw new ArgumentNullException(nameof(name));
 
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new())
     {
         try
         {
