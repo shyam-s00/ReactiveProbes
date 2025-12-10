@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using ReactiveProbes;
+using SampleAPI.Context;
 
 namespace SampleAPI;
 
@@ -11,15 +13,21 @@ public class Program
         // Add services to the container.
         builder.Services.AddAuthorization();
 
+        builder.Services.AddDbContext<PersonContext>(o => o.UseSqlServer(
+            builder.Configuration.GetConnectionString("DefaultConnection")));
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        
+        builder.Services.AddControllers();
         
         // APIs health checks
         builder.Services.AddHealthChecks()
             .AddReactiveHealthProbes()
             .AddRestApiCheck("Google", "https://www.google.com", ["health"])
-            .AddRestApiCheck("ReqRes", "https://reqres.in/api/unknown/", ["health"])
+            //.AddRestApiCheck("ReqRes", "https://reqres.in/api/unknown/", ["health"])
+            .AddSqlServerCheck<PersonContext>(tags: ["sqlserver", "health"])
             //.AddRestApiCheck("SlowAPI", "https://reqres.in/api/users?delay=10", ["health", "startup"])
             //.AddCheck<CustomHealthCheck>("CustomHealthCheck", tags: ["custom"])
             //.AddCheck<ApiHealthCheck>(name: "ApiHealthCheck", tags: ["custom"])
@@ -47,9 +55,10 @@ public class Program
         };
         
         //app.MapHealthCheckEndpoint();
-        app.RegisterReactiveHealthProbe();
+        app.RegisterReactiveHealthProbe()
+            .AddLiveStatusEndpoint();
         app.RegisterReactiveStartupProbe();
-
+        app.MapControllers();
         app.MapGet("/weatherforecast", (HttpContext httpContext) =>
             {
                 var forecast = Enumerable.Range(1, 5).Select(index =>
@@ -64,7 +73,7 @@ public class Program
             })
             .WithName("GetWeatherForecast")
             .WithOpenApi();
-
+        
         app.Run();
     }
 }
