@@ -51,7 +51,7 @@ public static class ReactiveProbeInstaller
     // ReSharper disable once MemberCanBePrivate.Global
     /// <summary>
     /// Maps the health check to <c>/live</c> endpoint or with the specified pattern and tag. The endpoint returns the 
-    /// extended health check status as json response.
+    /// extended health check status as a JSON response.
     /// </summary>
     /// <param name="app">The application builder to configure the middleware.</param>
     /// <param name="pattern">The URL pattern for the health check endpoint.  Defaults to <c>/live</c></param>
@@ -106,20 +106,23 @@ public static class ReactiveProbeInstaller
         builder.AddTypeActivatedCheck<SqlServerHealthCheck>(name, null, tags, [connectionName]);
         return builder;
     }
-    
-    /// <summary>
-    /// Adds a SQL Server health check to the health checks builder using a EF Core DbContext.
-    /// </summary>
-    /// <typeparam name="T">The type of the DbContext.</typeparam>
+
     /// <param name="builder">The health checks builder to add the check to.</param>
-    /// <param name="name">The name of the health check. Defaults to "SqlServer".</param>
-    /// <param name="tags">Optional tags to filter the health check.</param>
-    /// <returns>The updated health checks builder.</returns>
-    public static IHealthChecksBuilder AddSqlServerCheck<T>(this IHealthChecksBuilder builder, string name = "SqlServer", string[]? tags = null)
-        where T : DbContext
+    extension(IHealthChecksBuilder builder)
     {
-        builder.AddCheck<SqlServerHealthCheck<T>>(name, null, tags: tags!);
-        return builder;
+        /// <summary>
+        /// Adds a SQL Server health check to the health checks builder using an EF Core DbContext.
+        /// </summary>
+        /// <typeparam name="T">The type of the DbContext.</typeparam>
+        /// <param name="name">The name of the health check. Defaults to "SqlServer".</param>
+        /// <param name="tags">Optional tags to filter the health check.</param>
+        /// <returns>The updated health checks builder.</returns>
+        public IHealthChecksBuilder AddSqlServerCheck<T>(string name = "SqlServer", string[]? tags = null)
+            where T : DbContext
+        {
+            builder.AddCheck<SqlServerHealthCheck<T>>(name, null, tags: tags!);
+            return builder;
+        }
     }
     
     /// <summary>
