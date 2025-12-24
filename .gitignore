@@ -1,6 +1,6 @@
 **/bin/*
 **/obj/*
 /.idea/
-*.sln.DotSettings.user
+**/*.sln.DotSettings.user
 **/coveragereport/
 **/coverage.*.xml
