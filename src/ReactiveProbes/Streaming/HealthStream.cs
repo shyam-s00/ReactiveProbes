@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using ReactiveProbes.Environment;
+using ReactiveProbes.Models;
 
 namespace ReactiveProbes.Streaming;
 
@@ -8,6 +10,7 @@ public class HealthStream
     public DateTime Timestamp { get; set; }
     public double TotalDuration { get; set; }
     public List<HealthEntry> Checks { get; set; } = [];
+    public InstanceInfo Instance { get; set; }
 
     public class HealthEntry
     {
@@ -24,6 +27,7 @@ public class HealthStream
             Status = report.Status.ToString(),
             Timestamp = DateTime.UtcNow,
             TotalDuration = report.TotalDuration.TotalMilliseconds,
+            Instance = InstanceInfoProvider.Instance,
             Checks = report.Entries.Select(entry => new HealthEntry
             {
                 Name = entry.Key,

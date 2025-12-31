@@ -198,17 +198,19 @@ public static class ReactiveProbeInstaller
         app.MapGet(pattern, async (HttpContext ctx, ReactiveHealthStream healthStream, CancellationToken ct) =>
         {
             ctx.Response.Headers.Append("Content-Type", "text/event-stream");
+            ctx.Response.Headers.Append("Cache-Control", "no-cache");
+            ctx.Response.Headers.Append("Connection", "keep-alive");
 
             var tcs = new TaskCompletionSource();
 
-            using var subscription = healthStream.Stream.Subscribe(async void (report) =>
+            using var subscription = healthStream.WhenHealthChanged().Subscribe(async void (report) =>
             {
                 try
                 {
                     var stream = HealthStream.From(report);
                     var healthJson = JsonSerializer.Serialize(stream);
 
-                    await ctx.Response.WriteAsync($"data: {healthJson}\n", ct);
+                    await ctx.Response.WriteAsync($"data: {healthJson}\n\n", ct);
                     await ctx.Response.Body.FlushAsync(ct);
 
                 }
@@ -222,7 +224,8 @@ public static class ReactiveProbeInstaller
             {
                 await tcs.Task;
             }
-        }).WithDisplayName("Reactive health stream");
+        }).WithDisplayName("Reactive health stream")
+            .ExcludeFromDescription();
 
         return app;
     }

@@ -7,27 +7,28 @@ namespace ReactiveProbes.Streaming;
 
 public class ReactiveHealthStream : IHostedService, IDisposable
 {
+    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private readonly HealthCheckService _healthCheckService;
-    private readonly IConnectableObservable<HealthReport> _healthReportStream;
-    private IDisposable _streamDisposable;
+    private readonly IConnectableObservable<HealthReport> _healthReportWhenHealthChanged;
+    private IDisposable? _streamDisposable;
     private bool _disposedValue;
 
     public ReactiveHealthStream(HealthCheckService healthCheckService)
     {
         _healthCheckService = healthCheckService ?? throw new ArgumentNullException(nameof(healthCheckService));
         
-        _healthReportStream = Observable.Interval(TimeSpan.FromSeconds(5))
+        _healthReportWhenHealthChanged = Observable.Interval(TimeSpan.FromSeconds(5))
             .SelectMany(_ => Observable.FromAsync(ct => _healthCheckService.CheckHealthAsync(ct)))
             .DistinctUntilChanged(report => report.Status)
             .Multicast(new ReplaySubject<HealthReport>(1));
         
     }
 
-    public IObservable<HealthReport> Stream => _healthReportStream;
+    public IObservable<HealthReport> WhenHealthChanged() => _healthReportWhenHealthChanged;
     
     public Task StartAsync(CancellationToken ct)
     {
-        _streamDisposable = _healthReportStream.Connect();
+        _streamDisposable = _healthReportWhenHealthChanged.Connect();
         return Task.CompletedTask;
     }
 
